@@ -56,11 +56,6 @@ h1 {
     color: white;
 }
 
-.booked {
-    background: #e74c3c;
-    color: white;
-}
-
 button {
     background: #2f6f6d;
     color: white;
@@ -119,9 +114,6 @@ button {
 
 <button onclick="book()">Book nu</button>
 
-<p id="resultat"></p>
-<p id="totalPris"></p>
-
 <br>
 
 <a href="https://qr.mobilepay.dk/box/e9381382-22b5-44fa-bbd8-66e93474ac1a/pay-in" target="_blank">
@@ -136,7 +128,6 @@ button {
 let calendar = document.getElementById("calendar");
 let valgt = [];
 let currentDate = new Date();
-let bookedDates = JSON.parse(localStorage.getItem("bookinger")) || [];
 
 function generateCalendar() {
     calendar.innerHTML = "";
@@ -156,19 +147,15 @@ function generateCalendar() {
         let fullDate = `${year}-${month+1}-${i}`;
         day.innerText = i;
 
-        if (bookedDates.includes(fullDate)) {
-            day.classList.add("booked");
-        } else {
-            day.onclick = () => {
-                day.classList.toggle("selected");
+        day.onclick = () => {
+            day.classList.toggle("selected");
 
-                if (valgt.includes(fullDate)) {
-                    valgt = valgt.filter(d => d !== fullDate);
-                } else {
-                    valgt.push(fullDate);
-                }
-            };
-        }
+            if (valgt.includes(fullDate)) {
+                valgt = valgt.filter(d => d !== fullDate);
+            } else {
+                valgt.push(fullDate);
+            }
+        };
 
         calendar.appendChild(day);
     }
@@ -195,17 +182,14 @@ function book() {
 
     let total = valgt.length * pris;
 
-    bookedDates = bookedDates.concat(valgt);
-    localStorage.setItem("bookinger", JSON.stringify(bookedDates));
+    let besked = "Hej Jeppe, jeg vil gerne booke:%0A" +
+                 "Navn: " + navn + "%0A" +
+                 "Datoer: " + valgt.join(", ") + "%0A" +
+                 "Pris: " + total + " kr";
 
-    document.getElementById("resultat").innerText =
-        "Tak " + navn + "! Din booking er gemt.";
+    let smsLink = "sms:61720912?&body=" + besked;
 
-    document.getElementById("totalPris").innerText =
-        "Total pris: " + total + " kr";
-
-    valgt = [];
-    generateCalendar();
+    window.location.href = smsLink;
 }
 
 generateCalendar();
