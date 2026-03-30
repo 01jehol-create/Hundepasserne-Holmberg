@@ -56,6 +56,12 @@ h1 {
     color: white;
 }
 
+.booked {
+    background: #e74c3c;
+    color: white;
+    cursor: not-allowed;
+}
+
 button {
     background: #2f6f6d;
     color: white;
@@ -100,10 +106,18 @@ button {
 <button onclick="nextMonth()">Næste →</button>
 <h3 id="month"></h3>
 <div class="calendar" id="calendar"></div>
+<p style="font-size:14px;">Røde dage = optaget</p>
 </div>
 
 <div class="card">
 <h2>📋 Booking</h2>
+
+<p style="font-size:14px;">
+1. Vælg datoer<br>
+2. Tryk "Book via SMS"<br>
+3. Send SMS<br>
+4. Betal via MobilePay
+</p>
 
 <input type="text" id="navn" placeholder="Dit navn">
 
@@ -112,7 +126,7 @@ button {
 <option value="300">Med foder (300 kr pr døgn)</option>
 </select>
 
-<button onclick="book()">Book nu</button>
+<button onclick="book()">📩 Book via SMS</button>
 
 <br>
 
@@ -128,6 +142,13 @@ button {
 let calendar = document.getElementById("calendar");
 let valgt = [];
 let currentDate = new Date();
+
+// 🔴 HER SÆTTER DU OPTEGNEDE DAGE
+let bookedDates = [
+    "2026-4-10",
+    "2026-4-11",
+    "2026-4-15"
+];
 
 function generateCalendar() {
     calendar.innerHTML = "";
@@ -147,15 +168,19 @@ function generateCalendar() {
         let fullDate = `${year}-${month+1}-${i}`;
         day.innerText = i;
 
-        day.onclick = () => {
-            day.classList.toggle("selected");
+        if (bookedDates.includes(fullDate)) {
+            day.classList.add("booked");
+        } else {
+            day.onclick = () => {
+                day.classList.toggle("selected");
 
-            if (valgt.includes(fullDate)) {
-                valgt = valgt.filter(d => d !== fullDate);
-            } else {
-                valgt.push(fullDate);
-            }
-        };
+                if (valgt.includes(fullDate)) {
+                    valgt = valgt.filter(d => d !== fullDate);
+                } else {
+                    valgt.push(fullDate);
+                }
+            };
+        }
 
         calendar.appendChild(day);
     }
@@ -174,6 +199,11 @@ function prevMonth() {
 function book() {
     let navn = document.getElementById("navn").value;
     let pris = document.getElementById("pris").value;
+
+    if (navn === "") {
+        alert("Skriv dit navn først!");
+        return;
+    }
 
     if (valgt.length === 0) {
         alert("Vælg datoer først!");
