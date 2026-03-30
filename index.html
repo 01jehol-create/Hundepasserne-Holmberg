@@ -13,7 +13,7 @@ body {
 
 .hero {
     background: url('logo.png') center/contain no-repeat;
-    height: 300px;
+    height: 250px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -140,7 +140,12 @@ let calendar = document.getElementById("calendar");
 let valgt = [];
 let currentDate = new Date();
 
-let bookedDates = [];
+// 🔥 HENTER GEMTE BOOKINGER
+let bookedDates = JSON.parse(localStorage.getItem("bookedDates")) || [];
+
+function saveBookings() {
+    localStorage.setItem("bookedDates", JSON.stringify(bookedDates));
+}
 
 function generateCalendar() {
     calendar.innerHTML = "";
@@ -197,6 +202,10 @@ function book() {
         return;
     }
 
+    // 🔥 GEM BOOKINGER
+    bookedDates = bookedDates.concat(valgt);
+    saveBookings();
+
     let total = valgt.length * pris;
 
     let besked = "Hej, jeg vil gerne booke:%0A" +
@@ -205,6 +214,9 @@ function book() {
                  "Pris: " + total + " kr";
 
     window.location.href = "sms:61720912?&body=" + besked;
+
+    valgt = [];
+    generateCalendar();
 }
 
 generateCalendar();
