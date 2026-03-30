@@ -22,7 +22,6 @@ header img {
 
 h1 {
     color: #2f6f6d;
-    margin: 10px 0 0;
 }
 
 .container {
@@ -66,15 +65,14 @@ button {
     background: #2f6f6d;
     color: white;
     border: none;
-    padding: 10px;
+    padding: 12px;
     width: 100%;
     margin-top: 10px;
+    font-size: 16px;
 }
 
-input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
+.mobilepay {
+    background: #5A78FF;
 }
 </style>
 </head>
@@ -82,8 +80,8 @@ input {
 <body>
 
 <header>
-    <img src="logo.png" alt="Hundepasserne Holmberg logo">
-    <h1>Hundepasserne Holmberg</h1>
+    <img src="logo.png" alt="Logo">
+    <h1>🐶 Hundepasserne Holmberg</h1>
     <p>Tryg pasning af din hund</p>
 </header>
 
@@ -103,17 +101,33 @@ input {
 
 <div class="card">
 <h2>📅 Kalender</h2>
-<button onclick="prevMonth()">←</button>
-<button onclick="nextMonth()">→</button>
+<button onclick="prevMonth()">← Forrige</button>
+<button onclick="nextMonth()">Næste →</button>
 <h3 id="month"></h3>
 <div class="calendar" id="calendar"></div>
 </div>
 
 <div class="card">
 <h2>📋 Booking</h2>
+
 <input type="text" id="navn" placeholder="Dit navn">
+
+<select id="pris">
+<option value="250">Uden foder (250 kr pr døgn)</option>
+<option value="300">Med foder (300 kr pr døgn)</option>
+</select>
+
 <button onclick="book()">Book nu</button>
+
 <p id="resultat"></p>
+<p id="totalPris"></p>
+
+<br>
+
+<a href="https://qr.mobilepay.dk/box/e9381382-22b5-44fa-bbd8-66e93474ac1a/pay-in" target="_blank">
+<button class="mobilepay">💰 Betal med MobilePay</button>
+</a>
+
 </div>
 
 </div>
@@ -172,11 +186,14 @@ function prevMonth() {
 
 function book() {
     let navn = document.getElementById("navn").value;
+    let pris = document.getElementById("pris").value;
 
     if (valgt.length === 0) {
         alert("Vælg datoer først!");
         return;
     }
+
+    let total = valgt.length * pris;
 
     bookedDates = bookedDates.concat(valgt);
     localStorage.setItem("bookinger", JSON.stringify(bookedDates));
@@ -184,7 +201,11 @@ function book() {
     document.getElementById("resultat").innerText =
         "Tak " + navn + "! Din booking er gemt.";
 
-    location.reload();
+    document.getElementById("totalPris").innerText =
+        "Total pris: " + total + " kr";
+
+    valgt = [];
+    generateCalendar();
 }
 
 generateCalendar();
