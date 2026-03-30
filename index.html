@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Hundepasserne Holmberg</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f4f4f4;
+}
+
+header {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.day {
+    background: #ecf0f1;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.day:hover {
+    background: #27ae60;
+    color: white;
+}
+
+.selected {
+    background: #27ae60;
+    color: white;
+}
+
+.booked {
+    background: #e74c3c;
+    color: white;
+    cursor: not-allowed;
+}
+
+button {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🐶 Hundepasserne Holmberg</h1>
+    <p>Tryg pasning af din hund</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+    <h2>💰 Priser</h2>
+    <p>250 kr pr døgn (uden foder)</p>
+    <p>300 kr pr døgn (med foder)</p>
+</div>
+
+<div class="card">
+    <h2>📅 Vælg datoer</h2>
+    <div class="calendar" id="calendar"></div>
+</div>
+
+<div class="card">
+    <h2>📋 Booking</h2>
+
+    <input type="text" id="navn" placeholder="Dit navn">
+    <input type="email" id="email" placeholder="Din email">
+
+    <select id="foder">
+        <option value="250">Medbringer selv foder (250 kr)</option>
+        <option value="300">Foder inkluderet (300 kr)</option>
+    </select>
+
+    <button onclick="book()">Book nu</button>
+
+    <p id="resultat"></p>
+</div>
+
+</div>
+
+<script>
+let calendar = document.getElementById("calendar");
+let valgt = [];
+
+// hent gemte bookinger
+let bookedDates = JSON.parse(localStorage.getItem("bookinger")) || [];
+
+function generateCalendar() {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+
+    for (let i = 1; i <= 31; i++) {
+        let day = document.createElement("div");
+        day.classList.add("day");
+        day.innerText = i;
+
+        let fullDate = `${year}-${month}-${i}`;
+
+        if (bookedDates.includes(fullDate)) {
+            day.classList.add("booked");
+        } else {
+            day.onclick = () => selectDay(day, fullDate);
+        }
+
+        calendar.appendChild(day);
+    }
+}
+
+function selectDay(el, date) {
+    el.classList.toggle("selected");
+
+    if (valgt.includes(date)) {
+        valgt = valgt.filter(d => d !== date);
+    } else {
+        valgt.push(date);
+    }
+}
+
+function book() {
+    let navn = document.getElementById("navn").value;
+    let pris = document.getElementById("foder").value;
+
+    if (valgt.length === 0) {
+        alert("Vælg datoer først!");
+        return;
+    }
+
+    // gem booking
+    bookedDates = bookedDates.concat(valgt);
+    localStorage.setItem("bookinger", JSON.stringify(bookedDates));
+
+    let total = valgt.length * pris;
+
+    document.getElementById("resultat").innerText =
+        "Tak " + navn + "! Pris: " + total + " kr";
+
+    location.reload();
+}
+
+generateCalendar();
+</script>
+
+</body>
+</html>
