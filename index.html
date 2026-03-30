@@ -11,17 +11,25 @@ body {
     background: #f5f1e8;
 }
 
-header {
-    text-align: center;
-    padding: 30px;
+.hero {
+    background: url('logo.png') center/contain no-repeat;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 20px;
 }
 
-header img {
-    width: 200px;
+.hero h1, .hero p {
+    background: rgba(255,255,255,0.8);
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 
-h1 {
+.hero h1 {
     color: #2f6f6d;
+    margin: 0;
 }
 
 .container {
@@ -69,7 +77,6 @@ button {
     padding: 12px;
     width: 100%;
     margin-top: 10px;
-    font-size: 16px;
 }
 
 .mobilepay {
@@ -80,12 +87,9 @@ button {
 
 <body>
 
-<header>
-<!-- 🔥 LOGO VIRKER HER -->
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..." />
-
-<h1>🐶 Hundepasserne Holmberg</h1>
-<p>Tryg pasning af din hund</p>
+<header class="hero">
+    <h1>🐶 Hundepasserne Holmberg</h1>
+    <p>Tryg pasning af din hund</p>
 </header>
 
 <div class="container">
@@ -108,29 +112,20 @@ button {
 <button onclick="nextMonth()">Næste →</button>
 <h3 id="month"></h3>
 <div class="calendar" id="calendar"></div>
-<p style="font-size:14px;">Røde dage = optaget</p>
+<p>Røde dage = optaget</p>
 </div>
 
 <div class="card">
 <h2>📋 Booking</h2>
 
-<p style="font-size:14px;">
-1. Vælg datoer<br>
-2. Tryk "Book via SMS"<br>
-3. Send SMS<br>
-4. Betal via MobilePay
-</p>
-
 <input type="text" id="navn" placeholder="Dit navn">
 
 <select id="pris">
-<option value="250">Uden foder (250 kr pr døgn)</option>
-<option value="300">Med foder (300 kr pr døgn)</option>
+<option value="250">Uden foder (250 kr)</option>
+<option value="300">Med foder (300 kr)</option>
 </select>
 
 <button onclick="book()">📩 Book via SMS</button>
-
-<br>
 
 <a href="https://qr.mobilepay.dk/box/e9381382-22b5-44fa-bbd8-66e93474ac1a/pay-in" target="_blank">
 <button class="mobilepay">💰 Betal med MobilePay</button>
@@ -145,10 +140,7 @@ let calendar = document.getElementById("calendar");
 let valgt = [];
 let currentDate = new Date();
 
-let bookedDates = [
-    "2026-4-10",
-    "2026-4-11"
-];
+let bookedDates = [];
 
 function generateCalendar() {
     calendar.innerHTML = "";
@@ -200,26 +192,19 @@ function book() {
     let navn = document.getElementById("navn").value;
     let pris = document.getElementById("pris").value;
 
-    if (navn === "") {
-        alert("Skriv dit navn først!");
-        return;
-    }
-
-    if (valgt.length === 0) {
-        alert("Vælg datoer først!");
+    if (navn === "" || valgt.length === 0) {
+        alert("Udfyld navn og vælg datoer!");
         return;
     }
 
     let total = valgt.length * pris;
 
-    let besked = "Hej Jeppe, jeg vil gerne booke:%0A" +
+    let besked = "Hej, jeg vil gerne booke:%0A" +
                  "Navn: " + navn + "%0A" +
                  "Datoer: " + valgt.join(", ") + "%0A" +
                  "Pris: " + total + " kr";
 
-    let smsLink = "sms:61720912?&body=" + besked;
-
-    window.location.href = smsLink;
+    window.location.href = "sms:61720912?&body=" + besked;
 }
 
 generateCalendar();
